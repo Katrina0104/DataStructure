@@ -11,8 +11,8 @@ Input Format:
 1.	The first line contains a list of integers representing the level-order traversal of the binary tree. Use -1 for null nodes.
 Output Format:
 Print an integer representing the diameter of the binary tree.
-Example:
-Input:
+
+Example Input:
 [1, 2, 3, -1, -1, 4, 5]
 Output:
 3
@@ -39,8 +39,8 @@ o	"GET" to fetch the highest-priority task.
 Output Format:
 1.	For every "GET" operation, print the name of the task with the highest priority.
 2.	At the end, print the list of remaining tasks in descending order of priority.
-Example:
-Input:
+   
+Example Input:
 Enter the number of operations: 5
 ADD task1 4
 ADD task2 5
@@ -68,13 +68,14 @@ Input Format
 Output Format
 •	A single line containing the merged sorted array.
 
-Example Input
-3
-1 4 7
-2 5 8
-3 6 9
-Example Output
-Merged Array: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+Example Input:
+Enter the number of sorted arrays (K): 4
+Enter each sorted array on a new line:
+1 8 14
+3 9 15
+6 11 20
+7 13 21
+Merged Array: [1, 3, 6, 7, 8, 9, 11, 13, 14, 15, 20, 21]
 
 
  
