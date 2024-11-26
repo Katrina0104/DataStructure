@@ -1,8 +1,6 @@
-// Katrina 1123521 deadline : 11/28
-
 #include <iostream>
 #include <vector>
-#include <algorithm>
+#include <queue>
 
 using namespace std;
 
@@ -12,31 +10,41 @@ struct Task {
     int deadline;  // Deadline of the task
 };
 
-// Comparison function to sort tasks in descending order of profit
-bool compare(Task a, Task b) {
-    return a.profit > b.profit;
-}
+// Comparison function to create a max-heap based on profit
+struct CompareProfit {
+    bool operator()(const Task& a, const Task& b) {   // define operator ()
+        return a.profit < b.profit;  // If a.profit < b.profit, a will be placed after b
+    }
+};
 
-// Function to schedule tasks to maximize profit
+// Function to schedule tasks using a Max Priority Queue
 int scheduleTasks(vector<Task>& tasks, vector<int>& scheduledTasks) {
-    // Sort tasks in descending order of profit
-    sort(tasks.begin(), tasks.end(), compare);
+    // Create a max-heap (priority queue) to store tasks sorted by profit
+    priority_queue<Task, vector<Task>, CompareProfit> maxHeap;    // to make the elements from big to small ex : [140, 130, 120, 100, 90] (from example)
 
-    // This code loops through all tasks and finds the maximum deadline, so we know how many time slots are needed to schedule the task
+    // Push all tasks into the priority queue
+    for (const Task& task : tasks) {
+        maxHeap.push(task);
+    }
+
+    // Find the maximum deadline to determine the number of time slots
     int maxDeadline = 0;
-    for (const Task& task : tasks) {  // const Task& task : tasks is syntax for a range-based for loop  -> range-based means simplify the writing of the loop and directly traverse the container
+    for (const Task& task : tasks) {
         maxDeadline = max(maxDeadline, task.deadline);
     }
 
-    // We create a timeSlots vector to represent the status of each time slot, initialized to -1 to indicate that the time slot is not occupied
+    // Create an array to represent time slots, initialized to -1 (unoccupied)
     vector<int> timeSlots(maxDeadline, -1);
 
     int totalProfit = 0;
 
-    // Iterate through the sorted tasks
-    for (const Task& task : tasks) {
+    // Process tasks from the max-heap
+    while (!maxHeap.empty()) {   
+        Task task = maxHeap.top();  // Get the task with the highest profit
+        maxHeap.pop();  // Remove the task from the heap
+
         // Start from the task's deadline and find an available time slot
-        for (int j = task.deadline - 1; j >= 0; --j) {  
+        for (int j = task.deadline - 1; j >= 0; --j) {
             if (timeSlots[j] == -1) { // If the time slot is unoccupied
                 timeSlots[j] = task.profit; // Assign the task to this slot
                 totalProfit += task.profit; // Add the profit to the total profit
@@ -63,12 +71,13 @@ int main() {
     vector<int> scheduledTasks; // Vector to store the scheduled tasks
     int maxProfit = scheduleTasks(tasks, scheduledTasks); // Schedule tasks and calculate the maximum profit
 
+    // Output the results
     cout << "Maximum Profit: " << maxProfit << endl;
     cout << "Scheduled Tasks: [";
     for (size_t i = 0; i < scheduledTasks.size(); ++i) {
-        cout << scheduledTasks[i]; 
+        cout << scheduledTasks[i]; // Print the profit of each scheduled task
         if (i < scheduledTasks.size() - 1) {
-            cout << ", "; 
+            cout << ", "; // Add a comma between task profits
         }
     }
     cout << "]" << endl;
