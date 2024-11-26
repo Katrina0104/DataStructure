@@ -1,58 +1,79 @@
-#include <bits/stdc++.h>
+// Katrina 1123521  deadline:11/28
+
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <string>
+#include <sstream>   //A string stream used to parse input commands
+#include <algorithm>
 using namespace std;
 
-/* prints element and NGE pair for all
-elements of arr[] of size n */
-void printNGE(int arr[], int n)
-{
-    stack<int> s;
+struct Task {
+    int priority;
+    string name;
 
-    // push the first element to stack
-    s.push(arr[0]);  // Establish a "wait for comparison" mechanism 
-
-    // iterate for rest of the elements
-    for (int i = 1; i < n; i++) {
-        if (s.empty()) {
-            s.push(arr[i]);
-            continue;
-        }
-
-        // pop elements from the stack smaller than arr[i]
-        while (!s.empty() && s.top() < arr[i]) {
-            cout << s.top() << " --> " << arr[i] << endl;
-            s.pop();
-        }
-
-        // push the current element onto the stack
-        s.push(arr[i]);
+    // Custom comparator for max-heap behavior
+    bool operator<(const Task& other) const {   // determine the operator < 
+        return priority < other.priority;
     }
+};
 
-    // print -1 for elements remaining in the stack
-    while (!s.empty()) {
-        cout << s.top() << " --> " << -1 << endl;
-        s.pop();
-    }
-}
-
-int main()
-{
+int main() {
     int n;
-    
-    // Input the number of elements in the array
-    cout << "Enter the number of elements: ";
+    cout << "Enter the number of operations: ";
     cin >> n;
+    cin.ignore();
 
-    int arr[n]; // Declare array of size n
+    priority_queue<Task> maxHeap; // Max-heap to store tasks
+    vector<string> results;      // Store results for "GET" operations
 
-    // Input elements into the array
-    cout << "Enter the elements: ";
-    for (int i = 0; i < n; i++) {
-        cin >> arr[i];
+    for (int i = 0; i < n; ++i) {
+        string operation;
+        getline(cin, operation);  // read every line
+
+        stringstream ss(operation);  // Creates a stringstream object ss and initializes it as an operation string. This way, you can decompose the operation string into its components as if it were reading data from standard input.
+        string command;
+        ss >> command;  // Extracts a word (or a string separated by whitespace characters) from the stringstream object ss and assigns it to the variable command
+
+        if (command == "ADD") {
+            string task_name;
+            int priority;
+            ss >> task_name >> priority;
+            maxHeap.push({priority, task_name});
+        } else if (command == "GET") {
+            if (!maxHeap.empty()) {
+                Task topTask = maxHeap.top();
+                maxHeap.pop();
+                results.push_back(topTask.name);
+            } else {
+                results.push_back("No tasks available");
+            }
+        }
+    }
+    
+    cout << endl; 
+    cout << "Output : " << endl;
+    for (const string& result : results) {
+        cout << result << endl;
     }
 
-    // Call the function to print NGE
-    printNGE(arr, n);
-    
+    // Remaining tasks in descending order of priority
+    vector<Task> remainingTasks;
+    while (!maxHeap.empty()) {
+        remainingTasks.push_back(maxHeap.top());
+        maxHeap.pop();
+    }
+
+    sort(remainingTasks.rbegin(), remainingTasks.rend(), [](const Task& a, const Task& b) {
+        return a.priority < b.priority;
+    });
+
+    cout << "Remaining tasks: [";
+    for (size_t i = 0; i < remainingTasks.size(); ++i) {
+        cout << "('" << remainingTasks[i].name << "', " << remainingTasks[i].priority << ")";
+        if (i != remainingTasks.size() - 1) cout << ", ";
+    }
+    cout << "]" << endl;
+
     return 0;
 }
-
