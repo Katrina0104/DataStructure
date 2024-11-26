@@ -1,77 +1,75 @@
+// Katrina 1123521  deadline: 11/28
+
 #include <iostream>
-#include <stack>
+#include <vector>
+#include <queue>
 using namespace std;
 
-// Function to insert an element at the bottom of a stack
-void insert_at_bottom(stack<int>& st, int x) {
-    if (st.empty()) {
-        st.push(x);
-        return;
-    }
+struct TreeNode {
+    int val;
+    TreeNode* left;
+    TreeNode* right;
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+};
 
-    // Hold the top element and pop it
-    int a = st.top();
-    st.pop();
+/*
+Without pointers, the TreeNode structure would need to embed the entire left and right subtrees directly within itself.
+This would result in inflexible and inefficient memory usage since every node would have to allocate space for potential child subtrees, even when those subtrees are not present.
+*/
 
-    // Recursively call to insert at the bottom
-    insert_at_bottom(st, x);
+TreeNode* buildTree(const vector<int>& levelOrder) {
+    if (levelOrder.empty() || levelOrder[0] == -1) return nullptr;
 
-    // Push the top element back after inserting the new element at the bottom
-    st.push(a);
+    TreeNode* root = new TreeNode(levelOrder[0]); // take the first element's value(levelOrder[0]) to become the root
+    queue<TreeNode*> q;
+    q.push(root);
+
+    int i = 1;
+    while (!q.empty() && i < levelOrder.size()) {
+        TreeNode* node = q.front();
+        q.pop();  // bcs it already add
+
+        if (levelOrder[i] != -1) {
+            node->left = new TreeNode(levelOrder[i]);  // let's why i start from 1
+            q.push(node->left);
+        }
+        i++;  // go to the next one
+
+        if (i < levelOrder.size() && levelOrder[i] != -1) {
+            node->right = new TreeNode(levelOrder[i]);
+            q.push(node->right);
+        }
+        i++;
+    } // add from left to right
+
+    return root;
 }
 
-// Function to reverse the given stack using insert_at_bottom()
-void reverse(stack<int>& st) {
-    if (st.empty()) return;
+int diameterOfBinaryTree(TreeNode* root, int& diameter) {   // Because it is a reference (&), it will be continuously updated during the recursion process, recording the currently found maximum diameter.
+    if (!root) return 0;   // if it's nullptr return 0
 
-    // Hold the top element and pop it
-    int x = st.top();
-    st.pop();
+    int leftHeight = diameterOfBinaryTree(root->left, diameter);
+	/* Call itself, passing in the left child node root->left of the current node as the new root node.
+       In this recursion, the program will try to calculate the height of the left subtree and check whether the diameter needs to be updated.*/
+    int rightHeight = diameterOfBinaryTree(root->right, diameter);
 
-    // Recursively reverse the remaining stack
-    reverse(st);
+    diameter = max(diameter, leftHeight + rightHeight);
 
-    // Insert the popped element at the bottom of the reversed stack
-    insert_at_bottom(st, x);
+    return max(leftHeight, rightHeight) + 1;  // the function to count
 }
 
-// Driver Code
 int main() {
-    stack<int> st;
-    int n, value;
+    vector<int> levelOrder;
+    cout << "Enter level-order traversal (use -1 for null nodes): ";
+    int value;
+    while (cin >> value) levelOrder.push_back(value);  // we need to use ctrl+z to stop the input (for windows)
 
-    // Get the number of elements
-    cout << "Enter the number of elements: ";
-    cin >> n;
+    TreeNode* root = buildTree(levelOrder);
 
-    // Get the stack elements from the user
-    cout << "Enter the elements (bottom to top): ";
-    for (int i = 0; i < n; i++) {
-        cin >> value;
-        st.push(value);  // Push the elements into the stack
-    }
+    int diameter = 0;  // initialization
+    diameterOfBinaryTree(root, diameter);
 
-    // Copy the original stack to display before reversal
-    stack<int> st2 = st;
-
-    cout << "Original Stack (top to bottom): ";
-    while (!st2.empty()) {
-        cout << st2.top() << " ";
-        st2.pop();
-    }
-    cout << endl;
-
-    // Reverse the stack
-    reverse(st);
-
-    // Print the reversed stack
-    cout << "Reversed Stack (top to bottom): ";
-    while (!st.empty()) {
-        cout << st.top() << " ";
-        st.pop();
-    }
-    cout << endl;
-
+    cout << "Diameter of the Binary Tree: " << diameter << endl;
     return 0;
 }
 
