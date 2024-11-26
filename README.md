@@ -91,20 +91,22 @@ Output Format
 2.	The list of scheduled tasks in the order they are executed.
 
 Example Input
-4
-100   2
-19   1
-27   2
-25   1
-Example Output
-Maximum Profit: 127
-Scheduled Tasks: [100, 27]
+Enter the number of tasks: 5
+Enter each task's profit and deadline:
+100 2
+140 1
+130 1
+120 2
+90 2
+Maximum Profit: 260
+Scheduled Tasks: [140, 120
+
 Explanation
-•	Input represents 4 tasks with (profit, deadline) as (100, 2), (19, 1), (27, 2), (25, 1).
+•	Input represents 5 tasks with (profit, deadline) as (100, 2), (140, 1), (130, 1), (120, 2), (90, 2).
 •	Using a Max Priority Queue, tasks with higher profit are prioritized while ensuring deadlines are respected:
-o	Task (100, 2) is scheduled in slot 2.
-o	Task (27, 2) is scheduled in slot 1.
-o	Total profit: 100 + 27 = 127.
+o	Task (140, 1) is scheduled in slot 2.
+o	Task (120, 2) is scheduled in slot 1.
+o	Total profit: 140 + 120 = 260.
 
 
 
