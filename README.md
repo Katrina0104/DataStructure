@@ -1,112 +1,77 @@
-# DataStructure HW2
+# DataStructure HW3
 katrina 1123521 
 
-Question 1: Binary Tree - Find the Diameter of a Binary Tree
-Problem Statement:
-Write a program to calculate the diameter of a binary tree. The diameter of a binary tree is the length of the longest path between any two nodes in the tree. The path may or may not pass through the root.
-You are required to:
-1.	Build the binary tree using level-order input. Use -1 to represent null nodes.
-2.	Implement a function to calculate the diameter of the binary tree efficiently using recursion.
-Input Format:
-1.	The first line contains a list of integers representing the level-order traversal of the binary tree. Use -1 for null nodes.
-Output Format:
-Print an integer representing the diameter of the binary tree.
+Question: 1
+Given an undirected graph with V nodes and E edges, create and return an adjacency list of the graph. 0-based indexing is followed everywhere.
+Examples: (Should not use the examples to submit your code. These examples are for your understanding)
+Input:
+V = 4, E = 4
+edges = [[0,1], [1,2], [1,3], [2,3]]
+![image](https://github.com/user-attachments/assets/d95991d4-fcf6-4e1f-abb5-0b7715ee1c69)
 
-Example Input:
-[1, 2, 3, -1, -1, 4, 5]
+
+Output: 
+[[1], [0,2,3], [1,3], [1,2]]
+Explanation:
+Node 0 is connected to 1.
+Node 1 is connected to 0,2,3.
+Node 2 is connected to 1,3.
+Node 3 is connected to 1,2.
+
+ 
+Question: 2
+Given a connected undirected graph represented by an adjacency list adj, which is a vector of vectors where each adj[i] represents the list of vertices connected to vertex i. Perform a Breadth First Traversal (BFS) starting from vertex 0, visiting vertices from left to right according to the adjacency list, and return a list containing the BFS traversal of the graph.
+Note: Do traverse in the same order as they are in the adjacency list.
+Examples: (Should not use the examples to submit your code. These examples are for your understanding)
+Input: adj = [[2,3,1], [0], [0,4], [0], [2]]
+![image](https://github.com/user-attachments/assets/c39425ff-f046-4a96-a67e-52a639567871)
+
+
+Output: [0, 2, 3, 1, 4]
+Explanation: 
+Starting from 0, the BFS traversal will follow these steps: 
+Visit 0 → Output: 0 
+Visit 2 (first neighbor of 0) → Output: 0, 2 
+Visit 3 (next neighbor of 0) → Output: 0, 2, 3 
+Visit 1 (next neighbor of 0) → Output: 0, 2, 3, 
+Visit 4 (neighbor of 2) → Final Output: 0, 2, 3, 1, 4
+
+
+Question: 3
+Given a connected undirected graph represented by an adjacency list adj, which is a vector of vectors where each adj[i] represents the list of vertices connected to vertex i. Perform a Depth First Traversal (DFS) starting from vertex 0, visiting vertices from left to right as per the adjacency list, and return a list containing the DFS traversal of the graph.
+Note: Do traverse in the same order as they are in the adjacency list.
+Examples: (Should not use the examples to submit your code. These examples are for your understanding)
+Input: adj = [[1, 2], [0, 2], [0, 1, 3, 4], [2], [2]]
+![image](https://github.com/user-attachments/assets/1a015387-dab1-43d0-a2dd-baaf69d54b40)
+
+
+Output: [0, 1, 2, 3, 4]
+Explanation: 
+Starting from 0, the DFS traversal proceeds as follows: 
+Visit 0 → Output: 0 
+Visit 1 (the first neighbor of 0) → Output: 0, 1 
+Visit 2 (the first neighbor of 1) → Output: 0, 1, 2 
+Visit 3 (the first neighbor of 2) → Output: 0, 1, 2, 3 
+Backtrack to 2 and visit 4 → Final Output: 0, 1, 2, 3, 4
+
+
+Question: 4
+Given a weighted, undirected, and connected graph with V vertices and E edges, your task is to find the sum of the weights of the edges in the Minimum Spanning Tree (MST) of the graph. The graph is represented by an adjacency list, where each element adj[i] is a vector containing vector of integers. Each vector represents an edge, with the first integer denoting the endpoint of the edge and the second integer denoting the weight of the edge.
+Examples: (Should not use the examples to submit your code. These examples are for your understanding)
+Input:
+V = 3, E = 3
+0 1 5
+1 2 3
+0 2 1
+![image](https://github.com/user-attachments/assets/46a6861d-5c27-480c-90a2-c24a160d86d4)
+
+
 Output:
-3
->> bcs 1
-      / \
-     2   3
-        / \
-       4   5     Output:3 (3 paths)
+4
+Explanation:
+![image](https://github.com/user-attachments/assets/d21170fa-5cea-4c55-9337-6e228c216dc3)
+The Spanning Tree resulting in a weight of 4 is shown above.
 
-
-
-
-Question 2: Heap Sort - Build a Priority Queue for Tasks
-Problem Statement:
-Write a program to manage a task priority queue using a max heap. Each task has a name and a priority level. Your program should allow:
-1.	Add a Task: Add a task with a given priority.
-2.	Get the Highest Priority Task: Remove and return the task with the highest priority.
-3.	Display the Remaining Tasks: Print the remaining tasks in descending order of priority.
-Input Format:
-1.	The first line contains an integer N, the number of operations.
-2.	The next N lines contain either:
-o	"ADD task_name priority" to add a task.
-o	"GET" to fetch the highest-priority task.
-Output Format:
-1.	For every "GET" operation, print the name of the task with the highest priority.
-2.	At the end, print the list of remaining tasks in descending order of priority.
-   
-Example Input:
-Enter the number of operations: 5
-ADD task1 4
-ADD task2 5
-GET
-ADD task3 7
-GET
-
-Output : 
-task2
-task3
-Remaining tasks: [('task1', 4)]
-
-
- 
-Question 3: Merge K Sorted Arrays Using Min Priority Queue
-You are given K sorted arrays of integers. Write a Python program to merge these arrays into a single sorted array using a Min Priority Queue.
-Your program should:
-1.	Insert the first element of each array into a Min Priority Queue along with the array index and element index.
-2.	Extract the smallest element from the queue, add it to the result array, and insert the next element from the same array into the queue.
-3.	Continue this process until all elements from all arrays are merged.
-
-Input Format
-1.	An integer K, the number of sorted arrays.
-2.	K sorted arrays, each entered on a new line, with elements separated by spaces.
-Output Format
-•	A single line containing the merged sorted array.
-
-Example Input:
-Enter the number of sorted arrays (K): 4
-Enter each sorted array on a new line:
-1 8 14
-3 9 15
-6 11 20
-7 13 21
-Merged Array: [1, 3, 6, 7, 8, 9, 11, 13, 14, 15, 20, 21]
-
-
- 
-Question 4: Schedule Tasks with Deadlines Using Max Priority Queue
-You are given N tasks, each with a profit and a deadline. Write a Python program to schedule the tasks such that the maximum profit is achieved, using a Max Priority Queue.
-Each task must be completed within its deadline (1-based index), and only one task can be scheduled at a time.
-
-Input Format
-1.	An integer N, the number of tasks.
-2.	N lines containing two integers each: profit and deadline of a task.
-Output Format
-1.	The maximum profit that can be achieved.
-2.	The list of scheduled tasks in the order they are executed.
-
-Example Input
-Enter the number of tasks: 5
-Enter each task's profit and deadline:
-100 2
-140 1
-130 1
-120 2
-90 2
-Maximum Profit: 260
-Scheduled Tasks: [140, 120
-
-Explanation
-•	Input represents 5 tasks with (profit, deadline) as (100, 2), (140, 1), (130, 1), (120, 2), (90, 2).
-•	Using a Max Priority Queue, tasks with higher profit are prioritized while ensuring deadlines are respected:
-o	Task (140, 1) is scheduled in slot 2.
-o	Task (120, 2) is scheduled in slot 1.
-o	Total profit: 140 + 120 = 260.
 
 
 
