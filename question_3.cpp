@@ -1,90 +1,67 @@
-// Katrina 1123521 deadline : 11/28
+// Katrina 1123521 deadline:12/12
 
 #include <iostream>
 #include <vector>
-#include <queue>
-#include <sstream> // For parsing input
+#include <unordered_set>
+#include <sstream>
 using namespace std;
 
-// Define a structure to represent elements in the priority queue
-struct Element {
-    int value;       // Value of the element
-    int arrayIndex;  // Index of the array it belongs to
-    int elementIndex; // Index of the element in the array
+// Helper function to perform DFS traversal
+void dfs(int node, const vector<vector<int>>& adj, unordered_set<int>& visited, vector<int>& result) {
+    visited.insert(node);    // Mark the node as visited
+    result.push_back(node);  // Add the node to the result
 
-    // Define a comparison operator for the priority queue (min-heap)    ->   like the qus2 we use same way
-    bool operator>(const Element& other) const {
-        return value > other.value;
-    }
-};
-
-vector<int> mergeKSortedArrays(const vector<vector<int>>& arrays) {
-    priority_queue<Element, vector<Element>, greater<Element>> minHeap;   // Initialize a minimum heap (min-heap)
-    vector<int> mergedArray;
-
-    // Step 1: Add the first element of each array into the heap
-    for (int i = 0; i < arrays.size(); ++i) {
-        if (!arrays[i].empty()) { // Check if the array is not empty
-            minHeap.push({arrays[i][0], i, 0});  // this part {arrays[i][0], i, 0} can look line22 bcs the value define like this
+    // Explore each neighbor of the current node
+    for (int neighbor : adj[node]) {
+        if (visited.find(neighbor) == visited.end()) {
+            dfs(neighbor, adj, visited, result); // Recursively visit unvisited neighbors
         }
     }
+}
 
-    // Step 2: Process the heap until it's empty
-    while (!minHeap.empty()) {
-        Element current = minHeap.top();
-        minHeap.pop();
+// Main function to perform DFS traversal
+vector<int> dfsTraversal(const vector<vector<int>>& adj) {
+    int V = adj.size();
+    unordered_set<int> visited; // Set to track visited nodes
+    vector<int> result;         // Store the DFS traversal result
 
-        // Add the smallest value to the merged array
-        mergedArray.push_back(current.value);
+    dfs(0, adj, visited, result); // Start DFS from vertex 0
 
-        // If the array has more elements, add the next element to the heap
-        if (current.elementIndex + 1 < arrays[current.arrayIndex].size()) {
-            minHeap.push({arrays[current.arrayIndex][current.elementIndex + 1], current.arrayIndex, current.elementIndex + 1});
-        }
-        /*
-		Initialize a new Element structure containing the following three values:
-
-		arrays[current.arrayIndex][current.elementIndex + 1]:   Numeric value, that is, the element at position current.elementIndex + 1 in the current array.
-		current.arrayIndex:   The index of the array from which this element comes.
-		current.elementIndex + 1:   The index of the element in the array
-		*/
-    }
-
-    return mergedArray;
+    return result; // Return the result of DFS traversal
 }
 
 int main() {
-    int k;
-    cout << "Enter the number of sorted arrays (K): ";
-    cin >> k;
-    cin.ignore(); // Ignore the newline after the number of arrays
+    int V;
+    cout << "Enter the number of vertices: ";
+    cin >> V;
 
-    vector<vector<int>> arrays(k);
+    vector<vector<int>> adj(V);
 
-    // Input the sorted arrays
-    cout << "Enter each sorted array on a new line:\n";
-    for (int i = 0; i < k; ++i) {
+    cout << "Enter the adjacency list for each vertex (use space to separate neighbors), one vertex per line:" << endl;
+
+    cin.ignore(); // Ignore the newline character left by cin
+
+    for (int i = 0; i < V; i++) {
         string line;
-        getline(cin, line); // Read the entire line
-        istringstream iss(line);  // isringstream allows you to treat a string as a stream (just like a file or standard input) and read data from the string as if it were a stream.
-        int num;
-        while (iss >> num) {  // Read each number from the stream
-            arrays[i].push_back(num);
+        getline(cin, line);
+
+        stringstream ss(line);   // Used to initialize stringstream and use line string as data source. This allows us to extract numbers or other data from the string one by one and process the contents of the string like a stream.
+        int neighbor;   // determine the neighbor value
+        while (ss >> neighbor) {
+            adj[i].push_back(neighbor);
         }
     }
 
-    // Merge the sorted arrays
-    vector<int> mergedArray = mergeKSortedArrays(arrays);
+    // Get the DFS traversal result
+    vector<int> result = dfsTraversal(adj);
 
-    // Output the merged array
-    cout << "Merged Array: [";
-    for (size_t i = 0; i < mergedArray.size(); ++i) {
-        cout << mergedArray[i];
-        if (i != mergedArray.size() - 1) {
-            cout << ", ";
-        }
+    // Output the result
+    cout << "DFS Traversal: ";
+    for (int node : result) {
+        cout << node << " ";
     }
-    cout << "]" << endl;
+    cout << endl;
 
     return 0;
 }
+
