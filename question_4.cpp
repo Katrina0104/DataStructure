@@ -1,86 +1,112 @@
+// Katrina 1123521 deadline:12/12
+
 #include <iostream>
 #include <vector>
-#include <queue>
-
+#include <algorithm>
 using namespace std;
 
-// Structure to represent a task with profit and deadline
-struct Task {
-    int profit;  // Profit of the task
-    int deadline;  // Deadline of the task
-};
+// Disjoint Set (Union-Find) Data Structure
+class DisjointSet {
+public:
+    vector<int> parent, rank;
 
-// Comparison function to create a max-heap based on profit
-struct CompareProfit {
-    bool operator()(const Task& a, const Task& b) {   // define operator ()
-        return a.profit < b.profit;  // If a.profit < b.profit, a will be placed after b
+    DisjointSet(int V) {
+        parent.resize(V);
+        rank.resize(V, 0);
+        for (int i = 0; i < V; i++) {
+            parent[i] = i; // Each vertex is its own parent initially
+        }
+    }
+
+    // Find the root of the set containing x
+    int find(int x) {
+        if (parent[x] != x) {
+            parent[x] = find(parent[x]);  // Path compression
+        }
+        return parent[x];
+    }
+
+    // Union by rank to merge two sets
+    void unionSets(int x, int y) {
+        int rootX = find(x);
+        int rootY = find(y);
+
+        if (rootX != rootY) {
+            // Union by rank
+            if (rank[rootX] > rank[rootY]) {
+                parent[rootY] = rootX;
+            } else if (rank[rootX] < rank[rootY]) {
+                parent[rootX] = rootY;
+            } else {
+                parent[rootY] = rootX;
+                rank[rootX]++;
+            }
+        }
     }
 };
 
-// Function to schedule tasks using a Max Priority Queue
-int scheduleTasks(vector<Task>& tasks, vector<int>& scheduledTasks) {
-    // Create a max-heap (priority queue) to store tasks sorted by profit
-    priority_queue<Task, vector<Task>, CompareProfit> maxHeap;    // to make the elements from big to small ex : [140, 130, 120, 100, 90] (from example)
-
-    // Push all tasks into the priority queue
-    for (const Task& task : tasks) {
-        maxHeap.push(task);
-    }
-
-    // Find the maximum deadline to determine the number of time slots
-    int maxDeadline = 0;
-    for (const Task& task : tasks) {
-        maxDeadline = max(maxDeadline, task.deadline);
-    }
-
-    // Create an array to represent time slots, initialized to -1 (unoccupied)
-    vector<int> timeSlots(maxDeadline, -1);
-
-    int totalProfit = 0;
-
-    // Process tasks from the max-heap
-    while (!maxHeap.empty()) {   
-        Task task = maxHeap.top();  // Get the task with the highest profit
-        maxHeap.pop();  // Remove the task from the heap
-
-        // Start from the task's deadline and find an available time slot
-        for (int j = task.deadline - 1; j >= 0; --j) {
-            if (timeSlots[j] == -1) { // If the time slot is unoccupied
-                timeSlots[j] = task.profit; // Assign the task to this slot
-                totalProfit += task.profit; // Add the profit to the total profit
-                scheduledTasks.push_back(task.profit); // Record the scheduled task's profit
-                break; // Move to the next task
+int kruskalMST(int V, vector<vector<pair<int, int>>>& adj) {
+    // Step 1: Convert adjacency list to edge list
+    vector<pair<int, pair<int, int>>> edges; // {weight, {u, v}}
+    for (int u = 0; u < V; u++) {
+        for (auto& edge : adj[u]) {
+            int v = edge.first;
+            int weight = edge.second;
+            if (u < v) {  // To avoid adding both directions (u-v and v-u)
+                edges.push_back({weight, {u, v}});
             }
         }
     }
 
-    return totalProfit;
+    // Step 2: Sort edges by weight
+    sort(edges.begin(), edges.end());
+
+    // Step 3: Initialize Union-Find
+    DisjointSet ds(V);
+    int mstWeight = 0;
+
+    // Step 4: Process each edge
+    for (auto& edge : edges) {
+        int weight = edge.first;
+        int u = edge.second.first;
+        int v = edge.second.second;
+
+        // If u and v are in different sets, add this edge to MST
+        if (ds.find(u) != ds.find(v)) {
+            ds.unionSets(u, v);
+            mstWeight += weight;  // Add the weight of the edge to MST
+        }
+    }
+
+    return mstWeight;
 }
 
 int main() {
-    int N; // Number of tasks
-    cout << "Enter the number of tasks: ";
-    cin >> N;
+    int V, E;
 
-    vector<Task> tasks(N); // Vector to store all tasks
-    cout << "Enter each task's profit and deadline:" << endl;
-    for (int i = 0; i < N; ++i) {
-        cin >> tasks[i].profit >> tasks[i].deadline; // Input each task's profit and deadline
+    // Input number of vertices and edges
+    cout << "Enter the number of vertices: ";
+    cin >> V;
+    cout << "Enter the number of edges: ";
+    cin >> E;
+
+    vector<vector<pair<int, int>>> adj(V);  // Adjacency list to store graph
+
+    cout << "Enter the edges (u, v, weight) for each edge:" << endl;
+    for (int i = 0; i < E; i++) {
+        int u, v, weight;
+        cin >> u >> v >> weight;
+
+        adj[u].push_back({v, weight});  // Add edge u-v with weight
+        adj[v].push_back({u, weight});  // Add edge v-u with weight (undirected graph)
     }
 
-    vector<int> scheduledTasks; // Vector to store the scheduled tasks
-    int maxProfit = scheduleTasks(tasks, scheduledTasks); // Schedule tasks and calculate the maximum profit
+    // Find the MST weight
+    int mstWeight = kruskalMST(V, adj);
 
-    // Output the results
-    cout << "Maximum Profit: " << maxProfit << endl;
-    cout << "Scheduled Tasks: [";
-    for (size_t i = 0; i < scheduledTasks.size(); ++i) {
-        cout << scheduledTasks[i]; // Print the profit of each scheduled task
-        if (i < scheduledTasks.size() - 1) {
-            cout << ", "; // Add a comma between task profits
-        }
-    }
-    cout << "]" << endl;
+    // Output the weight of the MST
+    cout << "Weight of the MST: " << mstWeight << endl;
 
     return 0;
 }
+
