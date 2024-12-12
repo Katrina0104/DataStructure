@@ -1,79 +1,69 @@
-// Katrina 1123521  deadline:11/28
+// Katrina 1123521 deadline:12/12
 
 #include <iostream>
-#include <queue>
 #include <vector>
-#include <string>
-#include <sstream>   //A string stream used to parse input commands
-#include <algorithm>
+#include <queue>
+#include <sstream>  // For stringstream to split input
 using namespace std;
 
-struct Task {
-    int priority;
-    string name;
+vector<int> bfsTraversal(int V, vector<vector<int>>& adj) {
+    vector<int> bfs;               // Stores the BFS traversal result
+    vector<bool> visited(V, false); // To keep track of visited nodes
+    // Initialize a Boolean vector to record whether the node is accessed to prevent repeated processing of nodes during BFS or DFS, thereby ensuring the correctness and efficiency of the algorithm.
+    queue<int> q;                  // Queue for BFS
 
-    // Custom comparator for max-heap behavior
-    bool operator<(const Task& other) const {   // determine the operator < 
-        return priority < other.priority;
-    }
-};
+    // Start BFS from vertex 0
+    visited[0] = true;
+    q.push(0);
 
-int main() {
-    int n;
-    cout << "Enter the number of operations: ";
-    cin >> n;
-    cin.ignore();
+    while (!q.empty()) {
+        int node = q.front();
+        q.pop();
+        bfs.push_back(node);
 
-    priority_queue<Task> maxHeap; // Max-heap to store tasks
-    vector<string> results;      // Store results for "GET" operations
-
-    for (int i = 0; i < n; ++i) {
-        string operation;
-        getline(cin, operation);  // read every line
-
-        stringstream ss(operation);  // Creates a stringstream object ss and initializes it as an operation string. This way, you can decompose the operation string into its components as if it were reading data from standard input.
-        string command;
-        ss >> command;  // Extracts a word (or a string separated by whitespace characters) from the stringstream object ss and assigns it to the variable command
-
-        if (command == "ADD") {
-            string task_name;
-            int priority;
-            ss >> task_name >> priority;
-            maxHeap.push({priority, task_name});
-        } else if (command == "GET") {
-            if (!maxHeap.empty()) {
-                Task topTask = maxHeap.top();
-                maxHeap.pop();
-                results.push_back(topTask.name);
-            } else {
-                results.push_back("No tasks available");
+        // Traverse all neighbors of the current node
+        for (int neighbor : adj[node]) {
+            if (!visited[neighbor]) {
+                visited[neighbor] = true; // Mark as visited
+                q.push(neighbor);         // Add to queue for further exploration
             }
         }
     }
-    
-    cout << endl; 
-    cout << "Output : " << endl;
-    for (const string& result : results) {
-        cout << result << endl;
+
+    return bfs;
+}
+
+int main() {
+    int V;
+    cout << "Enter the number of vertices: ";
+    cin >> V;
+    cin.ignore();  // To ignore the newline character after entering the number of vertices
+
+    vector<vector<int>> adj(V);
+
+    cout << "Enter the adjacency list for each vertex, with neighbors separated by spaces:" << endl;
+
+    for (int i = 0; i < V; i++) {
+        string line;
+        cout << "Vertex " << i << ": ";
+        getline(cin, line);  // Read the whole line of neighbors for vertex i
+
+        stringstream ss(line);  // Use stringstream to parse the line
+        int neighbor;
+        while (ss >> neighbor) {
+            adj[i].push_back(neighbor); // Add each neighbor to the adjacency list
+        }
     }
 
-    // Remaining tasks in descending order of priority
-    vector<Task> remainingTasks;
-    while (!maxHeap.empty()) {
-        remainingTasks.push_back(maxHeap.top());
-        maxHeap.pop();
-    }
+    vector<int> result = bfsTraversal(V, adj);
 
-    sort(remainingTasks.rbegin(), remainingTasks.rend(), [](const Task& a, const Task& b) {
-        return a.priority < b.priority;
-    });
-
-    cout << "Remaining tasks: [";
-    for (size_t i = 0; i < remainingTasks.size(); ++i) {
-        cout << "('" << remainingTasks[i].name << "', " << remainingTasks[i].priority << ")";
-        if (i != remainingTasks.size() - 1) cout << ", ";
+    // Output the BFS traversal
+    cout << "BFS Traversal: ";
+    for (int node : result) {
+        cout << node << " ";
     }
-    cout << "]" << endl;
+    cout << endl;
 
     return 0;
 }
+
